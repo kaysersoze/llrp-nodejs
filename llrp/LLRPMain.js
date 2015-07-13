@@ -199,24 +199,40 @@ var llrpMain = function (config) {
 
 						var subParameters = mapSubParameters(decodedParameters);
 
+						//console.log('subparams', subParameters);
+
 						var tag = {
-							tagID: null,
-							tagSeenCount: 0
+							epc: null,
+							antennaID: null,
+							custom: null,
+							tagSeenCount: 0,
+							firstSeen: null,
+							lastSeen: null
 						};
-
+			
 						if (typeof subParameters[parameterC.EPC96] !== 'undefined') {
-							tag.tagID = subParameters[parameterC.EPC96].toString('hex');
+							tag.epc = subParameters[parameterC.EPC96].toString('hex');
 						}
-
+						if (typeof subParameters[parameterC.AntennaID] !== 'undefined') {
+							tag.antennaID = subParameters[parameterC.AntennaID].toString('hex');
+						}
+						if (typeof subParameters[parameterC.FirstSeenTimestampUTC] !== 'undefined') {
+							tag.firstSeen = subParameters[parameterC.FirstSeenTimestampUTC].toString('hex');
+						}
+						if (typeof subParameters[parameterC.LastSeenTimestampUTC] !== 'undefined') {
+							tag.lastSeen = subParameters[parameterC.LastSeenTimestampUTC].toString('hex');
+						}
+						if (typeof subParameters[parameterC.Custom] !== 'undefined') {
+							tag.custom = subParameters[parameterC.Custom].toString('hex');
+						}
 						if (typeof subParameters[parameterC.TagSeenCount] !== 'undefined') {
 							tag.tagSeenCount = subParameters[parameterC.TagSeenCount].readUInt16BE(0);
 						}
-
 						if (log) {
 							console.log('ID: ' + tag.tagID + '\tRead count: ' + tag.tagSeenCount);
 						}
 
-						if (tag.tagID) {
+						if (tag.epc) {
 							process.nextTick(function () {
 								self.emit('didSeeTag', tag);
 							});
