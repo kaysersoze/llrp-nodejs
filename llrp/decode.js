@@ -45,7 +45,9 @@ exports.message = function (buffer, returnObject) {
 	//check if there are still parameters following this parameter.
 	//if none, undefined will be returned and will not reach the step
 	//of getting added to the returnObject.
-	exports.message(buffer.slice(length), returnObject);
+	setTimeout(function(){
+		exports.message(buffer.slice(length), returnObject);
+	}, 0);
 
 	return returnObject;
 };
