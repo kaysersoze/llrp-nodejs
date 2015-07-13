@@ -53,14 +53,14 @@ var llrpMain = function (config) {
 	this.connect = function () {
 
 		// timeout after 60 seconds.
-		socket.setTimeout(60000, function () {
-			if (log) {
-				console.log('Connection timeout');
-			}
-			process.nextTick(function () {
-				self.emit('timeout', new Error('Connection timeout'));
-			});
-		});
+		// socket.setTimeout(60000, function () {
+		// 	if (log) {
+		// 		console.log('Connection timeout');
+		// 	}
+		// 	process.nextTick(function () {
+		// 		self.emit('timeout', new Error('Connection timeout'));
+		// 	});
+		// });
 
 		// connect with reader
 		client = socket.connect(port, ipaddress, function () {
