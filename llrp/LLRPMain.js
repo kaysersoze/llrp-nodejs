@@ -203,6 +203,7 @@ var llrpMain = function (config) {
 
 						var tag = {
 							epc: null,
+							epcData: null,
 							antennaID: null,
 							custom: null,
 							tagSeenCount: 0,
@@ -212,6 +213,9 @@ var llrpMain = function (config) {
 			
 						if (typeof subParameters[parameterC.EPC96] !== 'undefined') {
 							tag.epc = subParameters[parameterC.EPC96].toString('hex');
+						}
+						if (typeof subParameters[parameterC.EPCData] !== 'undefined') {
+							tag.epc = subParameters[parameterC.PCData].toString('hex');
 						}
 						if (typeof subParameters[parameterC.AntennaID] !== 'undefined') {
 							tag.antennaID = subParameters[parameterC.AntennaID].toString('hex');
@@ -232,7 +236,7 @@ var llrpMain = function (config) {
 							console.log('ID: ' + tag.tagID + '\tRead count: ' + tag.tagSeenCount);
 						}
 
-						if (tag.epc) {
+						if (tag.epc || tag.epcData) {
 							process.nextTick(function () {
 								self.emit('didSeeTag', tag);
 							});
