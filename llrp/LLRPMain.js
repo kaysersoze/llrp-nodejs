@@ -215,7 +215,7 @@ var llrpMain = function (config) {
 							tag.epc = subParameters[parameterC.EPC96].toString('hex');
 						}
 						if (typeof subParameters[parameterC.EPCData] !== 'undefined') {
-							tag.epc = subParameters[parameterC.PCData].toString('hex');
+							tag.epc = subParameters[parameterC.EPCData].toString('hex');
 						}
 						if (typeof subParameters[parameterC.AntennaID] !== 'undefined') {
 							tag.antennaID = subParameters[parameterC.AntennaID].toString('hex');
@@ -330,3 +330,4 @@ var llrpMain = function (config) {
 llrpMain.prototype = new EventEmitter();
 
 module.exports = llrpMain;
+
