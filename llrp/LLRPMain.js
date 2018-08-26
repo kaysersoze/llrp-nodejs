@@ -38,13 +38,19 @@ var llrpMain = function (config) {
 	var self = this;
 	var client = null;
 
-	//Defined message buffers. Brute force, I know I know.
-	var bSetReaderConfig = new Buffer('040300000010000000000000e2000580', 'hex');
-	var bEnableEventsAndReport = new Buffer('04400000000a00000000', 'hex');
-	var bAddRoSpec = new Buffer('04140000005d0000000000b1005300000001000000b2001200b300050000b60009000000000000b700180001000000b8000901000003e800ba000700010100ed001f01000000ee000bffc0015c0005c003ff000d000067ba0000008e01', 'hex');
-	var bEnableRoSpec = new Buffer('04180000000e0000000000000001', 'hex');
-	var bStartRoSpec = new Buffer('04160000000e0000000000000001', 'hex');
-	var bKeepaliveAck = new Buffer('04480000000a00000000', 'hex');
+	// Defined message buffers. Brute force, I know I know.
+	var bSetReaderConfig = Buffer.from('040300000010000000000000e2000580', 'hex');
+	var bEnableEventsAndReport = Buffer.from('04400000000a00000000', 'hex');
+
+	var bAddRoSpec_default = Buffer.from('04140000005d0000000000b1005300000001000000b2001200b300050000b60009000000000000b700180001000000b8000901000003e800ba000700010100ed001f01000000ee000bffc0015c0005c003ff000d000067ba0000008e01', 'hex');
+	var bAddRoSpec_impinj = Buffer.from('0414000000500000000400b1004600000001000000b2001200b300050000b60009000000000000b700180001000000b80009000000000000ba000700090100ed001201000100ee000bffc0015c0005c0', 'hex');
+	var bAddRoSpec = bAddRoSpec_impinj;
+
+	var bEnableRoSpec = Buffer.from('04180000000e0000000000000001', 'hex');
+	var bStartRoSpec = Buffer.from('04160000000e0000000000000001', 'hex');
+	var bKeepaliveAck = Buffer.from('04480000000a00000000', 'hex');
+	var bDeleteRoSpec = Buffer.from('04150000000e0000000000000001', 'hex');
+	var bCloseConnection = Buffer.from('040e0000000a00000000', 'hex');
 
 	// ====================
 	// Public Methods
@@ -67,6 +73,11 @@ var llrpMain = function (config) {
 			if (log) {
 				console.log('Connected to: ' + ipaddress + ':' + port);
 			}
+		});
+
+		client.setTimeout(10000);
+		client.on('timeout', () => {
+			client.destroy();
 		});
 
 		// whenever reader sends data.
@@ -118,6 +129,9 @@ var llrpMain = function (config) {
 						//send KEEPALIVE_ACK
 						writeMessage(client, bKeepaliveAck);
 						break;
+					case messageC.DELETE_ROSPEC_RESPONSE:
+						writeMessage(client, bCloseConnection);
+						break;
 					default:
 						//Default, doing nothing.
 					}
@@ -145,6 +159,16 @@ var llrpMain = function (config) {
 			process.nextTick(function () {
 				self.emit('error', err);
 			});
+		});
+	};
+
+	this.disconnect = function() {
+		process.nextTick(function() {
+			if(client.writable) {
+				writeMessage(client, bDeleteRoSpec);
+				resetIsStartROSpecSent();
+				// client.destroy();
+			}
 		});
 	};
 
@@ -196,11 +220,7 @@ var llrpMain = function (config) {
 				parametersKeyValue.forEach(function (decodedParameters) {
 					//read TagReportData Parameter only.
 					if (decodedParameters.type === parameterC.TagReportData) {
-
 						var subParameters = mapSubParameters(decodedParameters);
-
-						//console.log('subparams', subParameters);
-
 						var tag = {
 							epc: null,
 							epcData: null,
@@ -210,7 +230,7 @@ var llrpMain = function (config) {
 							firstSeen: null,
 							lastSeen: null
 						};
-			
+
 						if (typeof subParameters[parameterC.EPC96] !== 'undefined') {
 							tag.epc = subParameters[parameterC.EPC96].toString('hex');
 						}
@@ -232,9 +252,6 @@ var llrpMain = function (config) {
 						if (typeof subParameters[parameterC.TagSeenCount] !== 'undefined') {
 							tag.tagSeenCount = subParameters[parameterC.TagSeenCount].readUInt16BE(0);
 						}
-						if (log) {
-							console.log('ID: ' + tag.tagID + '\tRead count: ' + tag.tagSeenCount);
-						}
 
 						if (tag.epc || tag.epcData) {
 							process.nextTick(function () {
@@ -253,12 +270,14 @@ var llrpMain = function (config) {
 	 * @param  {[type]} client  rfid connection.
 	 * @param  {Buffer} buffer  to write.
 	 */
-	function writeMessage(client, buffer) {
+	function writeMessage(client, buffer, callback) {
 		process.nextTick(function () {
 			if (log) {
 				console.log('Sending ' + getMessageName(buffer));
 			}
-			client.write(buffer);
+			if(client.writable) {
+				client.write(buffer, 'utf8', callback);
+			}
 		});
 	}
 

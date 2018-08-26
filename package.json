@@ -1,19 +1,26 @@
 {
     "name": "llrp",
     "description": "Tag reader for connecting with RFID reader through LLRP",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": {
         "name": "Glenn Geenen",
         "email": "glenn@geenentijd.be",
         "url": "http://geenentijd.be"
     },
-    "contributors": [{
-        "name": "Billie Dee R. Ang",
-        "email": "billieang24@gmail.com"
- }, {
-        "name": "Jeriel Mari E. Lopez",
-        "email": "jerielmari@gmail.com"
- }],
+    "contributors": [
+	    {
+	        "name": "Billie Dee R. Ang",
+	        "email": "billieang24@gmail.com"
+	    },
+	    {
+	        "name": "Jeriel Mari E. Lopez",
+	        "email": "jerielmari@gmail.com"
+	    },
+	    {
+		    "name": "Carlos Noguera",
+	        "email": "carlos.noguera@email.com"
+	    }
+    ],
     "keywords": [
         "rfid",
         "llrp",
@@ -22,10 +29,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/GeenenTijd/llrp-nodejs"
+        "url": "https://github.com/kaysersoze/llrp-nodejs"
     },
     "bugs": {
-        "url": "https://github.com/GeenenTijd/llrp-nodejs/issues"
+        "url": "https://github.com/kaysersoze/llrp-nodejs/issues"
     },
     "main": "./index.js",
     "analyze": false,
