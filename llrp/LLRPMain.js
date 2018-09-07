@@ -73,7 +73,7 @@ var llrpMain = function (config) {
 			if (log) {
 				console.log('Connected to: ' + ipaddress + ':' + port);
 			}
-			self.emit('connected', this));
+			self.emit('connected', this);
 		});
 
 		client.setTimeout(10000);
