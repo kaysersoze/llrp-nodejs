@@ -38,6 +38,8 @@ var llrpMain = function (config) {
 	var self = this;
 	var client = null;
 
+	var timeout = config.timeout || 5000;
+
 	// Defined message buffers. Brute force, I know I know.
 	var bSetReaderConfig = Buffer.from('040300000010000000000000e2000580', 'hex');
 	var bEnableEventsAndReport = Buffer.from('04400000000a00000000', 'hex');
@@ -76,8 +78,9 @@ var llrpMain = function (config) {
 			self.emit('connected', this);
 		});
 
-		client.setTimeout(10000);
+		client.setTimeout(timeout);
 		client.on('timeout', () => {
+			self.emit('timeout', new Error('Connection timeout'));
 			client.destroy();
 		});
 
